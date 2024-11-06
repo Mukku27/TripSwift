@@ -39,6 +39,11 @@ dependencies:
   intl: ^0.18.0
   http: ^1.1.2
   cached_network_image: ^3.3.0
+  firebase_core: ^2.0.0
+  cloud_firestore: ^3.0.0
+  google_sign_in: ^5.0.0
+  flutter_google_maps: ^2.0.0
+  # Add any other dependencies as needed
 
 dev_dependencies:
   flutter_test:
