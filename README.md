@@ -1,6 +1,6 @@
 # TripSwift:The Ultimate AI-Powered Travel Companion
 
-** Welcome to TripSwift! **
+**Welcome to TripSwift!**
 TripSwift is a smart travel app designed to help users make the most of their vacations, especially when time is limited. With real-time itinerary management, group planning, offline access, and in-depth cultural insights, TripSwift adapts to the needs of individuals and groups for seamless, immersive travel experiences. The app integrates features like Google OAuth for secure authentication, Firebase Firestore for data storage, and offline map capabilities to ensure a smooth journey, even without an internet connection. Collaborate with friends, customize your trips, and gain valuable insights about each destination with TripSwift.
 
 ## Table of Contents
