@@ -1,4 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import "package:trip_swift/authController/signin.dart";
+import 'package:trip_swift/authController/signup.dart';
+import "home_page.dart";
+import "components/errorPopup.dart";
 
 void main() {
   runApp(const MyApp());
@@ -53,12 +58,33 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  void _submitForm() {
+  void _signInHandeler() async {
     if (_formKey.currentState!.validate()) {
-      // Successful validation logic
-      print("Login Successful");
-      print("Email: ${_emailController.text}");
-      print("Password: ${_passwordController.text}");
+      // Show loading spinner
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+      try {
+        UserCredential user =
+            await signIn(_emailController.text, _passwordController.text);
+        // Close loading spinner
+        Navigator.pop(context);
+        if (user.user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          // Show error feedback2
+          ErrorPopup.showError(context,"LogIn", "Login failed. Please try again.");
+        }
+      } catch (e) {
+        // Close loading spinner and show error if any unexpected issues occur
+        Navigator.pop(context);
+        ErrorPopup.showError(context,"LogIn", "Login failed. $e");
+      }
     }
   }
 
@@ -151,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    onPressed: _submitForm,
+                    onPressed: _signInHandeler,
                     child: const Text(
                       "Login",
                       style: TextStyle(fontSize: 18, color: Colors.white),
@@ -165,7 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()),
                     );
                   },
                   child: const Row(
@@ -177,7 +204,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         " Sign Up",
-                        style: TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                        style:
+                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
                       ),
                     ],
                   ),
@@ -190,7 +218,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -214,6 +241,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _signUpHandeler() async {
+    if (_formKey.currentState!.validate()) {
+      // Show loading spinner
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+      try {
+        UserCredential user =
+            await signUP(_emailController.text, _passwordController.text);
+        // Close loading spinner
+        Navigator.pop(context);
+        if (user.user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          // Show error feedback
+          ErrorPopup.showError(context,"SignUp", "SignUp failed. Please try again.");
+        }
+      } catch (e) {
+        // Close loading spinner and show error if any unexpected issues occur
+        Navigator.pop(context);
+        
+        ErrorPopup.showError(context,"SignUp", "SignUp failed. with  An error occurred: ${e}");
+      }
+    }
   }
 
   @override
@@ -353,12 +411,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        // If the form is valid, proceed with the signup logic
-                        print("Sign Up clicked");
-                      }
-                    },
+                    onPressed: _signUpHandeler,
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(
@@ -384,10 +437,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontSize: 14,
                           color: Colors.white70,
                         ),
-
                       ),
-                      Text('Login',
-                          style: TextStyle(fontSize: 14, color: Color(0xFF22DD85)),),
+                      Text(
+                        'Login',
+                        style:
+                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                      ),
                     ],
                   ),
                 ),
@@ -399,4 +454,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
