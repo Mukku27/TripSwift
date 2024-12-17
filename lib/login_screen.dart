@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       try {
         UserCredential user =
-            await signIn(_emailController.text, _passwordController.text);
+        await signIn(_emailController.text, _passwordController.text);
         // Close loading spinner
         Navigator.pop(context);
         if (user.user != null) {
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         " Sign Up",
                         style:
-                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                        TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
                       ),
                     ],
                   ),
@@ -253,7 +253,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       try {
         UserCredential user =
-            await signUP(_emailController.text, _passwordController.text);
+        await signUP(_emailController.text, _passwordController.text);
         // Close loading spinner
         Navigator.pop(context);
         if (user.user != null) {
@@ -268,7 +268,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } catch (e) {
         // Close loading spinner and show error if any unexpected issues occur
         Navigator.pop(context);
-        
+
         ErrorPopup.showError(context,"SignUp", "SignUp failed. with  An error occurred: ${e}");
       }
     }
@@ -441,7 +441,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         'Login',
                         style:
-                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                        TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
                       ),
                     ],
                   ),

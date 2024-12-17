@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:trip_swift/components/highlights_tile.dart';
 import 'package:trip_swift/popular_destinations.dart';
 import 'package:trip_swift/popular_destinations_data.dart';
+import 'package:trip_swift/components/highlights_tile.dart';
 import 'package:trip_swift/trip_hightlight_photos.dart';
 import 'components/location_detailed_view.dart';
-import 'components/ticket_tile.dart'; // Import the TicketTile widget
 import 'highligts_data.dart';
-import 'tickets_data.dart'; // Ticket data source
+
+
 
 void main() {
   runApp(const MaterialApp(home: HomeScreen()));
@@ -19,10 +19,10 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.black,
-      //   title: const Text("Travel App", style: TextStyle(color: Colors.white)),
-      // ),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text("Travel App", style: TextStyle(color: Colors.white)),
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +37,6 @@ class HomeScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => PopularDestinationsScreen()),
                 );
               },
-              isButtonRequired: true,
             ),
             SizedBox(
               height: 220,
@@ -81,8 +80,8 @@ class HomeScreen extends StatelessWidget {
               title: "Highlights",
               onSeeMoreTap: () {
                 // Action for See More in Highlights
+
               },
-              isButtonRequired: true,
             ),
             SizedBox(
               height: 220,
@@ -94,54 +93,24 @@ class HomeScreen extends StatelessWidget {
                   final highlight = highlights[index];
                   return HighLightTile(
                     width: 180,
-                    imageUrl: highlight["photoUrl"] ?? "",
-                    title: highlight["location"] ?? "",
+                    imageUrl: highlight["photoUrl"]??"",
+                    title: highlight["location"]??"",
                     subtitle: "Visited by ${highlight["userId"]}",
-                    trailingText: highlight["date"] ?? "",
+                    trailingText: highlight["date"]??"",
                     onTap: () {
+                      // Action for tile tap (e.g., detailed view of highlight)
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => HighlightsScreen(
-                            locationName: "Eiffel Tower",
+                            locationName: highlight["location"]??"",
                             imageUrls: highlightImages,
                             visitDate: DateTime.now(),
                           ),
                         ),
                       );
-                    },
-                  );
-                },
-              ),
-            ),
 
-            // View Tickets Section
-            _buildSectionHeader(
-              context,
-              title: "Your Tickets",
-              onSeeMoreTap: () {
-                // Navigate to a detailed tickets screen if required
-              },
-              isButtonRequired: false,
-            ),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: tickets.length,
-                itemBuilder: (context, index) {
-                  final ticket = tickets[index];
-                  return TicketTile(
-                    startDate: ticket["startDate"]??"",
-                    startTime: ticket["startTime"]??"",
-                    endDate: ticket["endDate"]??"",
-                    endTime: ticket["endTime"]??"",
-                    startLocation: ticket["startLocation"]??"",
-                    endLocation: ticket["endLocation"]??"",
-                    totalDuration: ticket["totalDuration"]??"",
-                    ticketType: ticket["ticketType"]??"",
-                    imagePath: ticket["imagePath"]??"",
+                    },
                   );
                 },
               ),
@@ -152,8 +121,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, {required String title, required VoidCallback onSeeMoreTap, required bool isButtonRequired}) {
-
+  Widget _buildSectionHeader(BuildContext context, {required String title, required VoidCallback onSeeMoreTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
@@ -167,13 +135,13 @@ class HomeScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          isButtonRequired ? TextButton(
+          TextButton(
             onPressed: onSeeMoreTap,
             child: const Text(
               "See More",
               style: TextStyle(color: Colors.blueAccent),
             ),
-          ):SizedBox.shrink(),
+          ),
         ],
       ),
     );
