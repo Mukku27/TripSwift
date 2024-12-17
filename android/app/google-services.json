@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "108336513808",
+    "project_id": "tripswift-cd1d9",
+    "storage_bucket": "tripswift-cd1d9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108336513808:android:aa1b28a368b55c36171b95",
+        "android_client_info": {
+          "package_name": "com.webuild.trip_swif"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSWHxLplhOrhnCpcnFqsrNrm2nkrMVbKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
