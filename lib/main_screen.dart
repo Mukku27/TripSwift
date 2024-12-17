@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trip_swift/home_page.dart';
+import 'package:trip_swift/suggest_trips.dart';
+import 'package:trip_swift/testing_features/maps_osm.dart';
 
 import 'chat_screen.dart';
 
@@ -88,11 +90,11 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [
+        children: [
           HomeScreen(),
-          Center(child: Text("Plan Trip Screen")),
+          SuggestTripScreen(),
           ChatScreen(),
-          Center(child: Text("Maps Screen")),
+          MapPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

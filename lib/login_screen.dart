@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trip_swift/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -373,7 +374,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Navigate back to Login Screen
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => MainScreen())
+                    );
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

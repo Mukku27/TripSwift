@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:trip_swift/components/photo_grid.dart';
 import 'package:trip_swift/components/review_input.dart';
 
@@ -34,24 +32,51 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
   int _currentIndex = 0;
 
   final List<String> _tabs = ["Overview", "Photo", "Review", "Community"];
+  final List<String>? _photos = [];
+  final List<Map<String, dynamic>>? _reviews = [];
 
-  // Simulated Streams for Dynamic Data
-  final Stream<List<String>> _photoStream = _fetchPhotos();
-  final Stream<List<Map<String, dynamic>>> _reviewStream = _fetchReviews();
+  bool _isLoadingPhotos = true;
+  bool _isLoadingReviews = true;
 
-  static Stream<List<String>> _fetchPhotos() async* {
+  // Like functionality variables
+  bool _isLiked = false;
+  static final List<Map<String, dynamic>> _likedLocations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await Future.wait([
+      _fetchPhotos().then((data) {
+        setState(() {
+          _photos!.addAll(data);
+          _isLoadingPhotos = false;
+        });
+      }),
+      _fetchReviews().then((data) {
+        setState(() {
+          _reviews!.addAll(data);
+          _isLoadingReviews = false;
+        });
+      }),
+    ]);
+  }
+
+  Future<List<String>> _fetchPhotos() async {
     await Future.delayed(const Duration(seconds: 2));
-    yield [
-      "https://example.com/photo1.jpg",
-      "https://example.com/photo2.jpg",
-      "https://example.com/photo3.jpg",
-      "https://example.com/photo4.jpg",
+    return [
+      "assets/images/intro_screen_mountain.png",
+      "assets/images/intro_screen_mountain.png",
+      "assets/images/intro_screen_mountain.png",
     ];
   }
 
-  static Stream<List<Map<String, dynamic>>> _fetchReviews() async* {
+  Future<List<Map<String, dynamic>>> _fetchReviews() async {
     await Future.delayed(const Duration(seconds: 2));
-    yield [
+    return [
       {"name": "John Doe", "rating": 4.5, "comment": "Great place to relax!"},
       {"name": "Jane Smith", "rating": 5.0, "comment": "Amazing view and cozy vibe."},
     ];
@@ -63,38 +88,50 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
     });
   }
 
+  void _toggleLike() {
+    setState(() {
+      _isLiked = !_isLiked;
+
+      if (_isLiked) {
+        // Add location details to the liked array
+        _likedLocations.add({
+          "imageUrl": widget.imageUrl,
+          "location": widget.location,
+          "title": widget.title,
+          "rating": widget.rating,
+          "description": widget.description,
+          "openingHours": widget.openingHours,
+          "type": widget.type,
+          "price": widget.price,
+        });
+      } else {
+        // Remove location details from the liked array
+        _likedLocations.removeWhere((element) => element['title'] == widget.title);
+      }
+
+      print("Liked Locations: $_likedLocations"); // Debug log
+    });
+  }
+
   Widget _buildTabContent() {
     switch (_currentIndex) {
       case 0:
         return _buildOverviewSection();
       case 1:
-        return StreamBuilder<List<String>>(
-          stream: _photoStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasData) {
-              return PhotoGrid(photoPaths: snapshot.data!);
-            }
-            return const Center(child: Text("No photos available", style: TextStyle(color: Colors.white)));
-          },
-        );
+        return _isLoadingPhotos
+            ? const Center(child: CircularProgressIndicator())
+            : PhotoGrid(photoPaths: _photos!);
       case 2:
-        return StreamBuilder<List<Map<String, dynamic>>>(
-          stream: _reviewStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasData) {
-              return _buildReviewSection(snapshot.data!);
-            }
-            return const Center(child: Text("No reviews available", style: TextStyle(color: Colors.white)));
-          },
-        );
+        return _isLoadingReviews
+            ? const Center(child: CircularProgressIndicator())
+            : _buildReviewSection(_reviews!);
       default:
-        return const Center(child: Text("Community Section (Coming Soon)", style: TextStyle(color: Colors.white)));
+        return const Center(
+          child: Text(
+            "Community Section (Coming Soon)",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
     }
   }
 
@@ -106,7 +143,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
         children: [
           Text(
             "About",
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
@@ -192,30 +229,15 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
                   ),
                 ),
                 Positioned(
-                  bottom: 16,
-                  left: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        widget.location,
-                        style: TextStyle(color: Colors.grey[300], fontSize: 14),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            widget.rating.toString(),
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ],
+                  top: 16,
+                  right: 16,
+                  child: IconButton(
+                    icon: Icon(
+                      _isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: _isLiked ? Colors.red : Colors.white,
+                      size: 28,
+                    ),
+                    onPressed: _toggleLike,
                   ),
                 ),
               ],
