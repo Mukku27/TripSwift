@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import "package:shared_preferences/shared_preferences.dart";
 import "package:trip_swift/authController/signin.dart";
 import 'package:trip_swift/authController/signup.dart';
+import "package:trip_swift/main_screen.dart";
 import "home_page.dart";
 import "components/errorPopup.dart";
+import "firebaseServices/users.dart";
+import "sharedPreferences/userid.dart";
 
 void main() {
   runApp(const MyApp());
@@ -67,23 +71,27 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
       try {
-        UserCredential user =
-        await signIn(_emailController.text, _passwordController.text);
+        UserCredential userCredential =await signIn(_emailController.text, _passwordController.text);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('currentUserEmail', _emailController.text);
+        await saveUserId(userCredential.user!.uid);
         // Close loading spinner
         Navigator.pop(context);
-        if (user.user != null) {
+        if (userCredential.user != null) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         } else {
           // Show error feedback2
-          ErrorPopup.showError(context,"LogIn", "Login failed. Please try again.");
+          ErrorPopup.showError(
+              context, "LogIn", "Login failed. Please try again.");
         }
       } catch (e) {
         // Close loading spinner and show error if any unexpected issues occur
         Navigator.pop(context);
-        ErrorPopup.showError(context,"LogIn", "Login failed. $e");
+        ErrorPopup.showError(context, "LogIn", "Login failed. $e");
       }
     }
   }
@@ -252,24 +260,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
       try {
-        UserCredential user =
+        UserCredential userCredential =
         await signUP(_emailController.text, _passwordController.text);
+        User? user = userCredential.user;
+        await addProfile(user!.uid, _nameController.text, user.email!);
         // Close loading spinner
         Navigator.pop(context);
-        if (user.user != null) {
+        if (userCredential.user != null) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else {
           // Show error feedback
-          ErrorPopup.showError(context,"SignUp", "SignUp failed. Please try again.");
+          ErrorPopup.showError(
+              context, "SignUp", "SignUp failed. Please try again.");
         }
       } catch (e) {
         // Close loading spinner and show error if any unexpected issues occur
         Navigator.pop(context);
 
-        ErrorPopup.showError(context,"SignUp", "SignUp failed. with  An error occurred: ${e}");
+        ErrorPopup.showError(
+            context, "SignUp", "SignUp failed. with  An error occurred: ${e}");
       }
     }
   }

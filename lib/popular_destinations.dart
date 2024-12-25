@@ -11,7 +11,6 @@ class PopularDestinationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
       // Add more destinations here
 
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
