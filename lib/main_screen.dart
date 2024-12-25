@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trip_swift/home_page.dart';
-import 'package:trip_swift/previoustrips_screens.dart';
 import 'package:trip_swift/suggest_trips.dart';
 import 'package:trip_swift/testing_features/maps_osm.dart';
-import 'package:trip_swift/upcoming_schedule.dart';
 
 import 'chat_screen.dart';
 
@@ -198,7 +196,7 @@ class _MainScreenState extends State<MainScreen> {
                 // Navigate to Upcoming Schedule Screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UpcomingScheduleScreen()),
+                  MaterialPageRoute(builder: (context) => const UpcomingScheduleScreen()),
                 );
               },
             ),
@@ -215,7 +213,7 @@ class _MainScreenState extends State<MainScreen> {
                 // Navigate to Previous Trips Screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PreviousTripsScreen()),
+                  MaterialPageRoute(builder: (context) => const PreviousTripsScreen()),
                 );
               },
             ),
@@ -239,3 +237,28 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+// Upcoming Schedule Screen (Placeholder)
+class UpcomingScheduleScreen extends StatelessWidget {
+  const UpcomingScheduleScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Upcoming Schedule")),
+      body: const Center(child: Text("Upcoming Schedule Screen")),
+    );
+  }
+}
+
+// Previous Trips Screen (Placeholder)
+class PreviousTripsScreen extends StatelessWidget {
+  const PreviousTripsScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Previous Trips")),
+      body: const Center(child: Text("Previous Trips Screen")),
+    );
+  }
+}

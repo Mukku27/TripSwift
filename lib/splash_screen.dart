@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trip_swift/main_screen.dart';
+
 import 'intro_screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'login_screen.dart';
+// import 'package:voiceforher/introduction_screens.dart';
+// import 'package:voiceforher/homescreen.dart';
+// import 'package:voiceforher/login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    final isLoggedIn = prefs.getBool('isLoggedIN') ?? false;
 
     if (isFirstTime) {
       await prefs.setBool('isFirstTime', false);

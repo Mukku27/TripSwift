@@ -47,7 +47,7 @@ class _MapPageState extends State<MapPage> {
     if (await Permission.location.request().isGranted) {
       // Get the current location
       Position position = await Geolocator.getCurrentPosition(
-
+        desiredAccuracy: LocationAccuracy.high,
       );
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
