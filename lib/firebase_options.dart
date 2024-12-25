@@ -19,7 +19,6 @@ class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     // Load environment variables
     dotenv.load();
-
     if (kIsWeb) {
       return web;
     }

@@ -46,7 +46,11 @@ dependencies:
   geolocator: ^13.0.2
   permission_handler: ^11.3.1
   firebase_auth: ^5.3.4
-  flutter_dotenv: ^3.0.0
+
+  flutter_map_tile_caching:
+  cloud_firestore:
+  flutter_dotenv: ^5.2.1
+
 
 dev_dependencies:
   flutter_test:
