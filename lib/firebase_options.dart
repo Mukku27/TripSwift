@@ -3,7 +3,6 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trip_swift/secrets.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
@@ -19,7 +18,6 @@ import 'package:trip_swift/secrets.dart';
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     // Load environment variables
-    dotenv.load();
     if (kIsWeb) {
       return web;
     }

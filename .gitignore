@@ -44,3 +44,4 @@ app.*.map.json
 
 .env
 lib/util/location.dart
+lib/secrets.dart
