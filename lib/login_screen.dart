@@ -4,7 +4,7 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:trip_swift/authController/signin.dart";
 import 'package:trip_swift/authController/signup.dart';
 import "package:trip_swift/main_screen.dart";
-import "home_page.dart";
+// import "home_page.dart";
 import "components/errorPopup.dart";
 import "firebaseServices/users.dart";
 import "sharedPreferences/userid.dart";
@@ -71,7 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
       try {
-        UserCredential userCredential =await signIn(_emailController.text, _passwordController.text);
+        UserCredential userCredential =
+            await signIn(_emailController.text, _passwordController.text);
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('currentUserEmail', _emailController.text);
@@ -213,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         " Sign Up",
                         style:
-                        TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
                       ),
                     ],
                   ),
@@ -261,7 +262,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       try {
         UserCredential userCredential =
-        await signUP(_emailController.text, _passwordController.text);
+            await signUP(_emailController.text, _passwordController.text);
         User? user = userCredential.user;
         await addProfile(user!.uid, _nameController.text, user.email!);
         // Close loading spinner
@@ -453,7 +454,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         'Login',
                         style:
-                        TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
+                            TextStyle(fontSize: 14, color: Color(0xFF22DD85)),
                       ),
                     ],
                   ),
