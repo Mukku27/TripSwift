@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trip_swift/home_page.dart';
 import 'package:trip_swift/previoustrips_screens.dart';
+import 'package:trip_swift/profile.dart';
 import 'package:trip_swift/suggest_trips.dart';
 import 'package:trip_swift/testing_features/maps_osm.dart';
 import 'package:trip_swift/upcoming_schedule.dart';
@@ -150,7 +151,7 @@ class _MainScreenState extends State<MainScreen> {
                 // Navigate to Profile Screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
                 );
               },
             ),
@@ -227,15 +228,15 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 // Profile Screen (Placeholder)
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+// class ProfileScreen extends StatelessWidget {
+//   const ProfileScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
-      body: const Center(child: Text("Profile Screen")),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("Profile")),
+//       body: const Center(child: Text("Profile Screen")),
+//     );
+//   }
+// }
 
