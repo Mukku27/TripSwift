@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trip_swift/login_screen.dart';
 import 'firebaseServices/users.dart';
 import 'sharedPreferences/userid.dart';
@@ -184,7 +185,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async{
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('isLoggedIn', false);
+                await prefs.remove('userId');
+                await prefs.remove('currentUserEmail');
                 Navigator.of(context).pop();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -206,17 +211,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Text('Profile'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
-        leading: IconButton(
-          icon: Icon(Icons.edit, color: Colors.white),
-          tooltip: 'Edit Profile',
-          onPressed: _editProfile,
-        ),
+        leading: IconButton(onPressed: () =>Navigator.of(context).pop(), icon: Icon(Icons.arrow_back)),
         actions: [
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.white),
+            tooltip: 'Edit Profile',
+            onPressed: _editProfile,
+          ),
           IconButton(
             icon: Icon(Icons.logout, color: Colors.white),
             tooltip: 'Logout',
             onPressed: _logout,
           ),
+
         ],
       ),
       body: Padding(

@@ -1,27 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:trip_swift/components/photo_grid.dart';
 import 'package:trip_swift/components/review_input.dart';
 
 class LocationDetailScreen extends StatefulWidget {
-  final String imageUrl;
-  final String location;
-  final String title;
-  final double rating;
-  final String description;
-  final String openingHours;
-  final String type;
-  final String price;
+  final String documentId; // Pass the document ID to fetch data
 
   const LocationDetailScreen({
     Key? key,
-    required this.imageUrl,
-    required this.location,
-    required this.title,
-    required this.rating,
-    required this.description,
-    required this.openingHours,
-    required this.type,
-    required this.price,
+    required this.documentId, // Document ID passed to fetch location data
   }) : super(key: key);
 
   @override
@@ -32,54 +19,112 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
   int _currentIndex = 0;
 
   final List<String> _tabs = ["Overview", "Photo", "Review", "Community"];
-  final List<String>? _photos = [];
-  final List<Map<String, dynamic>>? _reviews = [];
+  List<String> _photos = []; // List to hold photo URLs
+  List<Map<String, dynamic>> _reviews = []; // List to hold reviews
 
-  bool _isLoadingPhotos = true;
-  bool _isLoadingReviews = true;
+  bool _isLoading = true; // State to manage loading indicator
 
-  // Like functionality variables
+  late Map<String, dynamic> _locationData; // Holds location data
+
   bool _isLiked = false;
-  static final List<Map<String, dynamic>> _likedLocations = [];
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadLocationData(); // Load location data when the screen is initialized
   }
 
-  Future<void> _loadData() async {
-    await Future.wait([
-      _fetchPhotos().then((data) {
+  // Fetch location data from Firestore using the document ID
+  Future<void> _loadLocationData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(widget.documentId) // Fetch the location using the document ID
+          .get();
+
+      if (snapshot.exists) {
         setState(() {
-          _photos!.addAll(data);
-          _isLoadingPhotos = false;
+          _locationData = snapshot.data() as Map<String, dynamic>;
+          _isLoading = false;
         });
-      }),
-      _fetchReviews().then((data) {
+        _fetchPhotos(); // Fetch photos after location data is loaded
+        _fetchReviews(); // Fetch reviews after location data is loaded
+      } else {
+        // Handle error if document does not exist
         setState(() {
-          _reviews!.addAll(data);
-          _isLoadingReviews = false;
+          _isLoading = false;
         });
-      }),
-    ]);
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Error"),
+            content: Text("Location not found."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error
+      print("Error fetching location data: $e");
+    }
   }
 
-  Future<List<String>> _fetchPhotos() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      "assets/images/intro_screen_mountain.png",
-      "assets/images/intro_screen_mountain.png",
-      "assets/images/intro_screen_mountain.png",
-    ];
+  // Fetch photos from Firestore (assuming photos are stored as URLs or paths in the document)
+  Future<void> _fetchPhotos() async {
+    try {
+      QuerySnapshot photoSnapshot = await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(widget.documentId)
+          .collection('photos') // Assuming photos are in a subcollection 'photos'
+          .get();
+
+      List<String> photoUrls = photoSnapshot.docs
+          .map((doc) => doc['url'] as String) // Assuming each photo document has a 'url' field
+          .toList();
+
+      setState(() {
+        _photos = photoUrls;
+      });
+    } catch (e) {
+      print("Error fetching photos: $e");
+    }
   }
 
-  Future<List<Map<String, dynamic>>> _fetchReviews() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      {"name": "John Doe", "rating": 4.5, "comment": "Great place to relax!"},
-      {"name": "Jane Smith", "rating": 5.0, "comment": "Amazing view and cozy vibe."},
-    ];
+  // Fetch reviews from Firestore (assuming reviews are stored in a subcollection 'reviews')
+  Future<void> _fetchReviews() async {
+    try {
+      QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
+          .collection('locations')
+          .doc(widget.documentId)
+          .collection('reviews') // Assuming reviews are in a subcollection 'reviews'
+          .get();
+
+      List<Map<String, dynamic>> reviews = reviewSnapshot.docs
+          .map((doc) {
+        return {
+          'name': doc['name'] ?? 'Anonymous', // Assuming reviews have 'name' and 'comment' fields
+          'rating': doc['rating'] ?? 0.0,
+          'comment': doc['comment'] ?? 'No comment',
+        };
+      })
+          .toList();
+
+      setState(() {
+        _reviews = reviews;
+      });
+    } catch (e) {
+      print("Error fetching reviews: $e");
+    }
   }
 
   void _changeTab(int index) {
@@ -91,25 +136,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
   void _toggleLike() {
     setState(() {
       _isLiked = !_isLiked;
-
-      if (_isLiked) {
-        // Add location details to the liked array
-        _likedLocations.add({
-          "imageUrl": widget.imageUrl,
-          "location": widget.location,
-          "title": widget.title,
-          "rating": widget.rating,
-          "description": widget.description,
-          "openingHours": widget.openingHours,
-          "type": widget.type,
-          "price": widget.price,
-        });
-      } else {
-        // Remove location details from the liked array
-        _likedLocations.removeWhere((element) => element['title'] == widget.title);
-      }
-
-      print("Liked Locations: $_likedLocations"); // Debug log
     });
   }
 
@@ -118,13 +144,13 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
       case 0:
         return _buildOverviewSection();
       case 1:
-        return _isLoadingPhotos
+        return _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : PhotoGrid(photoPaths: _photos!);
+            : PhotoGrid(photoPaths: _photos);
       case 2:
-        return _isLoadingReviews
+        return _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _buildReviewSection(_reviews!);
+            : _buildReviewSection(_reviews);
       default:
         return const Center(
           child: Text(
@@ -147,13 +173,13 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            widget.description,
+            _locationData['description'] ?? 'No description available',
             style: TextStyle(color: Colors.grey[400], fontSize: 14),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow("Opening hours", widget.openingHours, Colors.greenAccent),
-          _buildInfoRow("Type", widget.type, Colors.blueAccent),
-          _buildInfoRow("Good for", "Coffee, Snack food, Take away", Colors.amber),
+          _buildInfoRow("Opening hours", _locationData['opening_hours'] ?? 'N/A', Colors.greenAccent),
+          _buildInfoRow("Type", _locationData['type'] ?? 'N/A', Colors.blueAccent),
+          _buildInfoRow("Price", _locationData['price'] ?? 'N/A', Colors.amber),
         ],
       ),
     );
@@ -214,8 +240,10 @@ class _LocationDetailScreenState extends State<LocationDetailScreen> {
             // Top Section: Image and Details
             Stack(
               children: [
-                Image.network(
-                  widget.imageUrl,
+                _isLoading
+                    ? const SizedBox.shrink()
+                    : Image.network(
+                  _locationData['image'] ?? '',
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,

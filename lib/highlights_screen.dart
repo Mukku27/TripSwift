@@ -9,11 +9,13 @@ import 'highligts_data.dart';
 
 
 void main() {
-  runApp(const MaterialApp(home: HomeScreen()));
+  runApp(MaterialApp(home: const HomeScreen(documentId: '')));
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final String documentId;
+  const HomeScreen({required this.documentId, Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 220,
+              // height: 220,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -47,24 +49,19 @@ class HomeScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final destination = destinations[index];
                   return HighLightTile(
+                    // openingTime: destination['opening_time'],
+                    // closingTime: destination['closing_time'],
                     width: 180,
                     imageUrl: destination["imageUrl"],
                     title: destination["title"],
                     subtitle: destination["description"],
-                    trailingText: "\$${destination["price"]}",
+                    price: "\$${destination["price"]}",
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LocationDetailScreen(
-                            title: destination["title"],
-                            imageUrl: destination["imageUrl"],
-                            description: destination["description"],
-                            price: destination["price"],
-                            rating: destination["rating"],
-                            location: destination["location"],
-                            openingHours: destination["openingHours"],
-                            type: destination["type"],
+                            documentId: documentId,
                           ),
                         ),
                       );
@@ -84,19 +81,22 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             SizedBox(
-              height: 220,
+              // height: 230,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: highlights.length,
+                itemCount: 5,
                 itemBuilder: (context, index) {
                   final highlight = highlights[index];
                   return HighLightTile(
+                    // openingTime: highlight['opening_time']??"",
+                    // closingTime: highlight['closing_time']??"",
+                    price: highlight['price']??"",
                     width: 180,
                     imageUrl: highlight["photoUrl"]??"",
                     title: highlight["location"]??"",
                     subtitle: "Visited by ${highlight["userId"]}",
-                    trailingText: highlight["date"]??"",
+                    // trailingText: highlight["date"]??"",
                     onTap: () {
                       // Action for tile tap (e.g., detailed view of highlight)
                       Navigator.push(

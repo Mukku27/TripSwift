@@ -74,11 +74,14 @@ class PreviousTripsScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final trip = trips[index];
             return HighLightTile(
+              price: trip['price'],
               width: double.infinity,
               imageUrl: trip['imageUrl'],
               title: trip['title'],
               subtitle: trip['subtitle'],
-              trailingText: trip['trailingText'],
+              // openingTime: trip['opening_time'],
+              // closingTime: trip['closing_time'],
+              // trailingText: trip['trailingText'],
               onTap: () {
                 Navigator.push(
                   context,

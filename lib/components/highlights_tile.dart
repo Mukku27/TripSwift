@@ -5,7 +5,9 @@ class HighLightTile extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String subtitle;
-  final String trailingText;
+  final String price;
+  // final String openingTime;
+  // final String closingTime;
   final VoidCallback onTap;
 
   const HighLightTile({
@@ -14,7 +16,9 @@ class HighLightTile extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.subtitle,
-    required this.trailingText,
+    required this.price,
+    // required this.openingTime,
+    // required this.closingTime,
     required this.onTap,
   }) : super(key: key);
 
@@ -34,11 +38,31 @@ class HighLightTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-              child: Image.asset(
-                imageUrl,
-                height: 120,
-                width: width,
-                fit: BoxFit.cover,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Display image from network with loading spinner
+                  Image.network(
+                    imageUrl,
+                    height: 120,
+                    width: width,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child; // Image has loaded
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                                : null,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -68,13 +92,22 @@ class HighLightTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    trailingText,
+                    price,
                     style: const TextStyle(
                       color: Colors.blueAccent,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // const SizedBox(height: 4.0),
+                  // Text(
+                  //   "Opening: $openingTime",
+                  //   style: TextStyle(color: Colors.grey[500]),
+                  // ),
+                  // Text(
+                  //   "Closing: $closingTime",
+                  //   style: TextStyle(color: Colors.grey[500]),
+                  // ),
                 ],
               ),
             ),
