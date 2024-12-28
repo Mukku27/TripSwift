@@ -44,11 +44,30 @@ class DestinationTile extends StatelessWidget {
             // Image
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-              child: Image.asset(
-                imageUrl,
-                height: 120, // Fixed height for the image
-                width: double.infinity,
-                fit: BoxFit.cover, // Ensures the image scales proportionally
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.network(
+                    imageUrl,
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child; // Image has loaded
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                                : null,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
             // Details
@@ -95,7 +114,6 @@ class DestinationTile extends StatelessWidget {
                 ],
               ),
             ),
-            // SizedBox(height: 8,)
           ],
         ),
       ),

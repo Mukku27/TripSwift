@@ -71,14 +71,7 @@ class _SuggestTripScreenState extends State<SuggestTripScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => LocationDetailScreen(
-                    imageUrl: location["imageUrl"],
-                    location: location["location"],
-                    title: location["title"],
-                    rating: location["rating"],
-                    description: location["description"],
-                    openingHours: location["openingHours"],
-                    type: location["type"],
-                    price: location["price"],
+                    documentId: '',
                   ),
                 ),
               );

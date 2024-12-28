@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:trip_swift/components/highlights_tile.dart';
 import 'package:trip_swift/popular_destinations.dart';
-import 'package:trip_swift/popular_destinations_data.dart';
+// import 'package:trip_swift/popular_destinations_data.dart';
 import 'package:trip_swift/trip_hightlight_photos.dart';
 import 'components/location_detailed_view.dart';
 import 'components/ticket_tile.dart'; // Import the TicketTile widget
@@ -14,6 +15,30 @@ void main() {
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+  Future<List<Map<String, dynamic>>> fetchHighlights() async {
+    try {
+      // Fetch data from Firestore (assuming the collection is named 'highlights')
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection(
+          'locations').get();
+
+      // Map the data into a list of maps
+      List<Map<String, dynamic>> highlights = snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'image': doc['image'],
+          'name': doc['name'],
+          'description': doc['description'],
+          'opening_time': doc['opening_time'],
+          'closing_time': doc['closing_time'],
+          'price': doc['price'],
+        };
+      }).toList();
+
+      return highlights;
+    } catch (e) {
+      throw Exception('Failed to load highlights: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,37 +62,47 @@ class HomeScreen extends StatelessWidget {
             ),
             // Removed SizedBox and used ListView directly here
             Container(
-              height: 220,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: destinations.length,
-                itemBuilder: (context, index) {
-                  final destination = destinations[index];
-                  return HighLightTile(
-                    width: 180,
-                    imageUrl: destination["imageUrl"],
-                    title: destination["title"],
-                    subtitle: destination["description"],
-                    trailingText: "\$ ${destination["price"]}",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LocationDetailScreen(
-                            title: destination["title"],
-                            imageUrl: destination["imageUrl"],
-                            description: destination["description"],
-                            price: destination["price"],
-                            rating: destination["rating"],
-                            location: destination["location"],
-                            openingHours: destination["openingHours"],
-                            type: destination["type"],
-                          ),
-                        ),
-                      );
-                    },
-                  );
+              height: 230,
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchHighlights(), // Fetch data from Firebase
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No highlights found.'));
+                  } else {
+                    final highlights = snapshot.data!;
+
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        final highlight = highlights[index];
+                        return HighLightTile(
+                          width: 180,
+                          imageUrl: highlight['image'],
+                          title: highlight['name'],
+                          subtitle: highlight['description'],
+                          price: highlight['price'],
+                          // openingTime: highlight['opening_time'],
+                          // closingTime: highlight['closing_time'],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LocationDetailScreen(
+                                  documentId: highlight["id"],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -95,7 +130,10 @@ class HomeScreen extends StatelessWidget {
                     imageUrl: highlight["photoUrl"] ?? "",
                     title: highlight["location"] ?? "",
                     subtitle: "Visited by ${highlight["userId"]}",
-                    trailingText: highlight["date"] ?? "",
+                    // trailingText: highlight["date"] ?? "",
+                    price: highlight['price']??"",
+                    // openingTime: highlight['opening_time']??"",
+                    // closingTime: highlight['closing_time']??"",
                     onTap: () {
                       Navigator.push(
                         context,
